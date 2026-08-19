@@ -1,0 +1,32 @@
+[
+  {"id":"seed-01","title":"DK BBQ & HotPot Buffet","meta":"Lettermark logo · Chinese hotpot restaurant","category":"logo","ratio":"16:9","image":"assets/logo-dkhotpot.jpg","tagNum":"01"},
+  {"id":"seed-02","title":"Érica Collection","meta":"Icon + wordmark · Women's clothing","category":"logo","ratio":"16:9","image":"assets/logo-erica.jpg","tagNum":"02"},
+  {"id":"seed-03","title":"Mahar Thukha","meta":"Traditional balm packaging brand","category":"logo","ratio":"16:9","image":"assets/logo-maharthukha.jpg","tagNum":"03"},
+  {"id":"seed-04","title":"November Fashion Shop","meta":"Feminine wholesale fashion brand","category":"logo","ratio":"16:9","image":"assets/logo-november.jpg","tagNum":"04"},
+  {"id":"seed-05","title":"Icon Marks Collection","meta":"A selection of symbol-first logos","category":"logo","ratio":"16:9","image":"assets/logo-iconmarks.jpg","tagNum":""},
+  {"id":"seed-06","title":"Combination & Lettermark Logos","meta":"Across food, fashion and services","category":"logo","ratio":"16:9","image":"assets/logo-combolettermark.jpg","tagNum":""},
+
+  {"id":"seed-07","title":"Redlove Apple","meta":"Collagen facial soap · Instagram carousel","category":"social","ratio":"16:9","image":"assets/social-redloveapple.jpg","tagNum":"01"},
+  {"id":"seed-08","title":"Nobel Tailor Bangkok","meta":"Bespoke tailoring · Post series","category":"social","ratio":"16:9","image":"assets/social-nobeltailor.jpg","tagNum":"02"},
+  {"id":"seed-09","title":"360 Med","meta":"Pharmacy distribution · Campaign set","category":"social","ratio":"16:9","image":"assets/social-360med.jpg","tagNum":"03"},
+  {"id":"seed-10","title":"Sun Gold & Jewelry","meta":"Fine jewelry · Product storytelling","category":"social","ratio":"16:9","image":"assets/social-sungold.jpg","tagNum":"04"},
+  {"id":"seed-11","title":"Dizward — Education & Property","meta":"Agency social media designs","category":"social","ratio":"16:9","image":"assets/social-dizward1.jpg","tagNum":""},
+  {"id":"seed-12","title":"Dizward — Relocation Campaign","meta":"Agency social media designs","category":"social","ratio":"16:9","image":"assets/social-dizward2.jpg","tagNum":""},
+  {"id":"seed-13","title":"Dizward — Nobel Tailor","meta":"Agency social media designs","category":"social","ratio":"16:9","image":"assets/social-dizward3.jpg","tagNum":""},
+
+  {"id":"seed-14","title":"Noods Noodle Shop","meta":"Korean restaurant · Full menu book","category":"menu","ratio":"16:9","image":"assets/menu-noods.jpg","tagNum":"01"},
+  {"id":"seed-15","title":"High Grade Bakery & Cake","meta":"Cake price board","category":"menu","ratio":"16:9","image":"assets/menu-highgrade.jpg","tagNum":"02"},
+  {"id":"seed-16","title":"Mergui Takoyaki","meta":"Japanese restaurant · Food menu","category":"menu","ratio":"16:9","image":"assets/menu-mergui.jpg","tagNum":"03"},
+  {"id":"seed-17","title":"Tun Tauk Restaurant","meta":"Drinks & appetizer menu book","category":"menu","ratio":"16:9","image":"assets/menu-tuntauk.jpg","tagNum":"04"},
+
+  {"id":"seed-18","title":"Smart Cafe & Restaurant","meta":"Roll-up banner set","category":"banner","ratio":"16:9","image":"assets/banner-smart.jpg","tagNum":"01"},
+  {"id":"seed-19","title":"PRO Cafe & Restaurant","meta":"Menu standee designs","category":"banner","ratio":"16:9","image":"assets/banner-pro.jpg","tagNum":"02"},
+  {"id":"seed-20","title":"Technoland — Advanced ICT Institute","meta":"University foundation program banners","category":"banner","ratio":"16:9","image":"assets/banner-technoland.jpg","tagNum":"03"},
+
+  {"id":"seed-21","title":"Nature Haircare Product","meta":"Flyer · Herbal shampoo & hair mask","category":"brochure","ratio":"16:9","image":"assets/brochure-nature.jpg","tagNum":"01"},
+  {"id":"seed-22","title":"SYA — Shining Youths Academy","meta":"Tri-fold enrollment brochure","category":"brochure","ratio":"16:9","image":"assets/brochure-sya.jpg","tagNum":"02"},
+
+  {"id":"seed-23","title":"Daw Aye — Black Sticky Rice","meta":"Traditional dessert box","category":"packaging","ratio":"16:9","image":"assets/packaging-dawaye1.jpg","tagNum":"01"},
+  {"id":"seed-24","title":"Daw Aye — Glutinous Rice Cake","meta":"Traditional dessert box","category":"packaging","ratio":"16:9","image":"assets/packaging-dawaye2.jpg","tagNum":"02"},
+  {"id":"seed-25","title":"Thahaya Bakery","meta":"Bread packaging · Three color-coded lines","category":"packaging","ratio":"16:9","image":"assets/packaging-thahaya.jpg","tagNum":"03"}
+]

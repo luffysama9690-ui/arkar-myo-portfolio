@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Arkar Myo Portfolio</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<div class="admin-shell">
+
+  <!-- LOGIN -->
+  <div class="admin-card" id="loginCard">
+    <h2>Admin Login</h2>
+    <p class="sub">Sign in to manage portfolio projects.</p>
+    <div class="admin-msg err" id="loginMsg"></div>
+    <div class="field">
+      <label for="pw">Password</label>
+      <input type="password" id="pw" placeholder="Enter admin password" autocomplete="current-password">
+    </div>
+    <button class="btn btn-primary" style="width:100%; justify-content:center;" id="loginBtn">Sign in</button>
+  </div>
+
+  <!-- UPLOAD PANEL (hidden until authed) -->
+  <div class="admin-card admin-wide" id="panelCard" style="display:none;">
+    <div class="admin-topbar">
+      <div>
+        <h2 style="margin-bottom:2px;">Manage Projects</h2>
+        <p class="sub" style="margin-bottom:0;">Upload new work to the live portfolio.</p>
+      </div>
+      <button class="btn btn-ghost" id="logoutBtn">Log out</button>
+    </div>
+
+    <div class="admin-msg" id="uploadMsg"></div>
+
+    <div class="field">
+      <label>Project Image</label>
+      <div class="dropzone" id="dropzone">
+        <input type="file" id="fileInput" accept="image/*" style="display:none;">
+        <span id="dropzoneLabel">Click to choose an image, or drag &amp; drop</span>
+      </div>
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label for="category">Category</label>
+        <select id="category">
+          <option value="logo">Logo Design</option>
+          <option value="social">Social Media</option>
+          <option value="menu">Menu Design</option>
+          <option value="banner">Banner &amp; Stand</option>
+          <option value="brochure">Brochure</option>
+          <option value="packaging">Packaging</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="ratio">Image Ratio</label>
+        <select id="ratio">
+          <option value="16:9">Landscape — 16:9</option>
+          <option value="4:5">Portrait — 4:5</option>
+          <option value="3:4">Portrait — 3:4</option>
+          <option value="1:1">Square — 1:1</option>
+          <option value="9:16">Story — 9:16</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="title">Project Title</label>
+      <input type="text" id="title" placeholder="e.g. Golden Lotus Cafe">
+    </div>
+    <div class="field">
+      <label for="meta">Short Description</label>
+      <input type="text" id="meta" placeholder="e.g. Logo &amp; packaging for a bakery brand">
+    </div>
+
+    <button class="btn btn-primary" style="width:100%; justify-content:center;" id="uploadBtn">
+      <span id="uploadBtnText">Upload Project</span>
+    </button>
+
+    <div class="uploaded-list" id="uploadedList">
+      <h3 style="font-size:13px; text-transform:uppercase; letter-spacing:0.08em; color:var(--violet); margin-bottom:14px; font-weight:700;">Recent Uploads</h3>
+      <div id="uploadedItems"></div>
+    </div>
+  </div>
+
+</div>
+
+<script src="assets/admin.js"></script>
+</body>
+</html>
