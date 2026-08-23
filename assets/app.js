@@ -174,4 +174,18 @@ async function loadProjects() {
   renderGrid();
 }
 
+async function loadProfilePhoto() {
+  try {
+    const res = await fetch("/api/profile", { cache: "no-store" });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.url) {
+      document.getElementById("heroPhoto").src = data.url;
+    }
+  } catch (e) {
+    /* keep default bundled photo */
+  }
+}
+
+document.addEventListener("DOMContentLoaded", loadProfilePhoto);
 document.addEventListener("DOMContentLoaded", loadProjects);

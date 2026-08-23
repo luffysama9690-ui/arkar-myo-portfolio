@@ -3,6 +3,54 @@ const panelCard = document.getElementById("panelCard");
 const loginMsg = document.getElementById("loginMsg");
 const uploadMsg = document.getElementById("uploadMsg");
 
+// --- profile photo ---
+const profileFileInput = document.getElementById("profileFileInput");
+const profileChangeBtn = document.getElementById("profileChangeBtn");
+const profilePreviewImg = document.getElementById("profilePreviewImg");
+const profileHint = document.getElementById("profileHint");
+
+profileChangeBtn.addEventListener("click", () => profileFileInput.click());
+
+profileFileInput.addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if (!file || !file.type.startsWith("image/")) return;
+
+  const reader = new FileReader();
+  reader.onload = async (ev) => {
+    const base64 = ev.target.result;
+    profilePreviewImg.src = base64;
+    profileHint.textContent = "Uploading...";
+    try {
+      const res = await fetch("/api/upload-profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageBase64: base64 }),
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        profileHint.textContent = "Profile photo updated — now live on the site.";
+        profilePreviewImg.src = data.url;
+      } else {
+        profileHint.textContent = data.error || "Failed to update photo.";
+      }
+    } catch (err) {
+      profileHint.textContent = "Failed to update photo.";
+    }
+  };
+  reader.readAsDataURL(file);
+  profileFileInput.value = "";
+});
+
+async function loadCurrentProfilePhoto() {
+  try {
+    const res = await fetch("/api/profile");
+    const data = await res.json();
+    if (data.url) profilePreviewImg.src = data.url;
+  } catch (e) {
+    /* keep default */
+  }
+}
+
 let selectedImages = []; // { file, base64 }
 
 function showMsg(el, text, type) {
@@ -21,6 +69,7 @@ async function checkSession() {
       loginCard.style.display = "none";
       panelCard.style.display = "block";
       loadUploadedList();
+      loadCurrentProfilePhoto();
     }
   } catch (e) {
     /* not logged in */
@@ -42,6 +91,7 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
       loginCard.style.display = "none";
       panelCard.style.display = "block";
       loadUploadedList();
+      loadCurrentProfilePhoto();
     } else {
       showMsg(loginMsg, data.error || "Incorrect password.", "err");
     }

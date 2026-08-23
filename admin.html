@@ -37,6 +37,20 @@
 
     <div class="admin-msg" id="uploadMsg"></div>
 
+    <div class="profile-section">
+      <label>Profile Photo</label>
+      <div class="profile-row">
+        <div class="profile-preview" id="profilePreview">
+          <img id="profilePreviewImg" src="assets/profile.jpg" alt="Current profile photo">
+        </div>
+        <div class="profile-actions">
+          <input type="file" id="profileFileInput" accept="image/*" style="display:none;">
+          <button class="btn btn-ghost" id="profileChangeBtn" type="button">Change Photo</button>
+          <p class="upload-hint" id="profileHint" style="margin-top:8px; text-align:left;"></p>
+        </div>
+      </div>
+    </div>
+
     <div class="field">
       <label>Project Photos</label>
       <div class="dropzone" id="dropzone">
