@@ -60,9 +60,7 @@ img{display:block; max-width:100%;}
 }
 .brand .mark{
   width:23px; height:23px; border-radius:7px;
-  background:linear-gradient(135deg, var(--violet), var(--pink));
-  display:flex; align-items:center; justify-content:center;
-  font-size:10.5px; font-weight:800; color:#1b1426; line-height:1;
+  object-fit:cover; display:block; flex-shrink:0;
 }
 .nav-links{display:flex; gap:24px; font-size:13px; color:var(--ink-dim); font-weight:500;}
 .nav-links a{position:relative; padding:4px 0; transition:color .2s; cursor:pointer;}
