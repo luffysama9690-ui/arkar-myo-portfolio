@@ -8,7 +8,8 @@ module.exports = async function handler(req, res) {
     const { blobs } = await list({ prefix: PROFILE_PATH });
     const match = blobs.find((b) => b.pathname === PROFILE_PATH);
     if (!match) return res.status(200).json({ url: null });
-    res.status(200).json({ url: match.url });
+    const version = match.uploadedAt ? new Date(match.uploadedAt).getTime() : Date.now();
+    res.status(200).json({ url: match.url, version });
   } catch (e) {
     res.status(200).json({ url: null });
   }

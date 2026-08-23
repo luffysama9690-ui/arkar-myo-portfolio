@@ -99,7 +99,7 @@ profileFileInput.addEventListener("change", async (e) => {
       const data = await res.json();
       if (res.ok && data.ok) {
         profileHint.textContent = "Profile photo updated — now live on the site.";
-        profilePreviewImg.src = data.url;
+        profilePreviewImg.src = data.url + "?v=" + Date.now();
       } else {
         profileHint.textContent = data.error || "Failed to update photo.";
       }
@@ -115,7 +115,7 @@ async function loadCurrentProfilePhoto() {
   try {
     const res = await fetch("/api/profile");
     const data = await res.json();
-    if (data.url) profilePreviewImg.src = data.url;
+    if (data.url) profilePreviewImg.src = data.url + "?v=" + (data.version || Date.now());
   } catch (e) {
     /* keep default */
   }

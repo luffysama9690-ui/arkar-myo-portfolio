@@ -180,7 +180,8 @@ async function loadProfilePhoto() {
     if (!res.ok) return;
     const data = await res.json();
     if (data.url) {
-      document.getElementById("heroPhoto").src = data.url;
+      const version = data.version || Date.now();
+      document.getElementById("heroPhoto").src = `${data.url}?v=${version}`;
     }
   } catch (e) {
     /* keep default bundled photo */
