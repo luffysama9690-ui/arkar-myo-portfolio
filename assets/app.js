@@ -48,7 +48,6 @@ function renderFilterBar() {
 }
 
 let currentList = [];
-let currentIndex = 0;
 
 function renderGrid() {
   const grid = document.getElementById("projectGrid");
@@ -89,27 +88,42 @@ function renderGrid() {
   });
 }
 
-/* ---------- lightbox ---------- */
+/* ---------- lightbox (per-project gallery) ---------- */
 const lightbox = document.getElementById("lightbox");
 const lbImage = document.getElementById("lbImage");
 const lbTitle = document.getElementById("lbTitle");
 const lbMeta = document.getElementById("lbMeta");
 const lbCount = document.getElementById("lbCount");
+const lbPrevBtn = document.getElementById("lbPrev");
+const lbNextBtn = document.getElementById("lbNext");
+
+let activeProject = null;
+let activeImages = [];
+let activeImgIndex = 0;
 
 function openLightbox(index) {
-  currentIndex = index;
+  const project = currentList[index];
+  if (!project) return;
+  activeProject = project;
+  activeImages =
+    project.images && project.images.length ? project.images : [project.image];
+  activeImgIndex = 0;
   updateLightbox();
   lightbox.classList.add("open");
 }
 
 function updateLightbox() {
-  const p = currentList[currentIndex];
-  if (!p) return;
-  lbImage.src = p.image;
-  lbImage.alt = p.title;
-  lbTitle.textContent = p.title;
-  lbMeta.textContent = p.meta || "";
-  lbCount.textContent = `${currentIndex + 1} / ${currentList.length}`;
+  if (!activeProject) return;
+  lbImage.src = activeImages[activeImgIndex];
+  lbImage.alt = activeProject.title;
+  lbTitle.textContent = activeProject.title;
+  lbMeta.textContent = activeProject.meta || "";
+  const multi = activeImages.length > 1;
+  lbCount.textContent = multi
+    ? `${activeImgIndex + 1} / ${activeImages.length}`
+    : "";
+  lbPrevBtn.style.display = multi ? "flex" : "none";
+  lbNextBtn.style.display = multi ? "flex" : "none";
 }
 
 function closeLightbox() {
@@ -117,18 +131,18 @@ function closeLightbox() {
 }
 
 function showNext() {
-  currentIndex = (currentIndex + 1) % currentList.length;
+  activeImgIndex = (activeImgIndex + 1) % activeImages.length;
   updateLightbox();
 }
 
 function showPrev() {
-  currentIndex = (currentIndex - 1 + currentList.length) % currentList.length;
+  activeImgIndex = (activeImgIndex - 1 + activeImages.length) % activeImages.length;
   updateLightbox();
 }
 
 document.getElementById("lbClose").addEventListener("click", closeLightbox);
-document.getElementById("lbNext").addEventListener("click", showNext);
-document.getElementById("lbPrev").addEventListener("click", showPrev);
+lbNextBtn.addEventListener("click", showNext);
+lbPrevBtn.addEventListener("click", showPrev);
 lightbox.addEventListener("click", (e) => {
   if (e.target === lightbox) closeLightbox();
 });
