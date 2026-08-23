@@ -41,14 +41,7 @@
     </div>
     <div class="hero-photo">
       <div class="ring-decor"></div>
-      <svg class="ring-text" viewBox="0 0 400 400">
-        <path id="ringPath" d="M 45 215 A 165 165 0 0 1 355 215" fill="none"></path>
-        <text>
-          <textPath href="#ringPath" startOffset="0">RAKO CREATIVE  •  GRAPHIC DESIGN  •  RAKO CREATIVE  •  GRAPHIC DESIGN</textPath>
-        </text>
-      </svg>
       <div class="photo-frame"><img src="assets/profile.jpg" alt="Arkar Myo"></div>
-      <div class="photo-badge"><span class="dot-live"></span>Open for freelance work</div>
     </div>
   </div>
 </header>
@@ -118,6 +111,20 @@
     </div>
   </div>
 </footer>
+
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lbClose" aria-label="Close">✕</button>
+  <button class="lb-arrow lb-prev" id="lbPrev" aria-label="Previous">‹</button>
+  <div class="lb-body">
+    <img id="lbImage" src="" alt="">
+    <div class="lb-info">
+      <h4 id="lbTitle"></h4>
+      <p id="lbMeta"></p>
+      <span class="chip" id="lbCount"></span>
+    </div>
+  </div>
+  <button class="lb-arrow lb-next" id="lbNext" aria-label="Next">›</button>
+</div>
 
 <script src="assets/app.js"></script>
 </body>

@@ -47,12 +47,17 @@ function renderFilterBar() {
   });
 }
 
+let currentList = [];
+let currentIndex = 0;
+
 function renderGrid() {
   const grid = document.getElementById("projectGrid");
   const list =
     activeFilter === "all"
       ? allProjects
       : allProjects.filter((p) => p.category === activeFilter);
+
+  currentList = list;
 
   if (list.length === 0) {
     grid.innerHTML = `<div class="empty-state">No projects in this category yet.</div>`;
@@ -61,9 +66,9 @@ function renderGrid() {
 
   grid.innerHTML = list
     .map(
-      (p) => `
+      (p, i) => `
     <div class="project">
-      <div class="project-media ${ratioClass(p.ratio)}">
+      <div class="project-media ${ratioClass(p.ratio)}" data-index="${i}">
         <img src="${p.image}" alt="${escapeHtml(p.title)}" loading="lazy">
       </div>
       <div class="project-info">
@@ -76,7 +81,63 @@ function renderGrid() {
     </div>`
     )
     .join("");
+
+  grid.querySelectorAll(".project-media").forEach((el) => {
+    el.addEventListener("click", () => {
+      openLightbox(parseInt(el.dataset.index, 10));
+    });
+  });
 }
+
+/* ---------- lightbox ---------- */
+const lightbox = document.getElementById("lightbox");
+const lbImage = document.getElementById("lbImage");
+const lbTitle = document.getElementById("lbTitle");
+const lbMeta = document.getElementById("lbMeta");
+const lbCount = document.getElementById("lbCount");
+
+function openLightbox(index) {
+  currentIndex = index;
+  updateLightbox();
+  lightbox.classList.add("open");
+}
+
+function updateLightbox() {
+  const p = currentList[currentIndex];
+  if (!p) return;
+  lbImage.src = p.image;
+  lbImage.alt = p.title;
+  lbTitle.textContent = p.title;
+  lbMeta.textContent = p.meta || "";
+  lbCount.textContent = `${currentIndex + 1} / ${currentList.length}`;
+}
+
+function closeLightbox() {
+  lightbox.classList.remove("open");
+}
+
+function showNext() {
+  currentIndex = (currentIndex + 1) % currentList.length;
+  updateLightbox();
+}
+
+function showPrev() {
+  currentIndex = (currentIndex - 1 + currentList.length) % currentList.length;
+  updateLightbox();
+}
+
+document.getElementById("lbClose").addEventListener("click", closeLightbox);
+document.getElementById("lbNext").addEventListener("click", showNext);
+document.getElementById("lbPrev").addEventListener("click", showPrev);
+lightbox.addEventListener("click", (e) => {
+  if (e.target === lightbox) closeLightbox();
+});
+document.addEventListener("keydown", (e) => {
+  if (!lightbox.classList.contains("open")) return;
+  if (e.key === "Escape") closeLightbox();
+  if (e.key === "ArrowRight") showNext();
+  if (e.key === "ArrowLeft") showPrev();
+});
 
 function escapeHtml(str) {
   const div = document.createElement("div");
