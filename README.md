@@ -20,16 +20,23 @@ admin panel for uploading new projects (image + category + aspect ratio).
 
 ## Using the admin panel
 
-Go to `https://<your-domain>/admin.html`, log in with `ADMIN_PASSWORD`, then:
+Go to `https://<your-domain>/admin.html`, log in with `ADMIN_PASSWORD`.
 
-- Choose **one or more images** (click or drag & drop) — each becomes a photo in that project's gallery
-- Reorder isn't drag-and-drop yet; remove and re-add in the order you want (first photo = cover thumbnail)
-- Pick a **category** (Logo Design, Social Media, Menu Design, Banner & Stand, Brochure, Packaging)
-- Pick an **aspect ratio** (16:9, 4:5, 3:4, 1:1, 9:16) — applies to the cover thumbnail in the grid
-- Add a title and short description
-- Upload — it appears on the live site immediately, filterable by category. Clicking the project opens a lightbox that browses through all of that project's own photos with next/prev.
+**Upload a new project:**
+- Choose one or more images — each becomes a photo in that project's gallery (first = cover thumbnail)
+- Pick a category, aspect ratio, title and short description
+- Click **Upload Project**
 
-Uploaded projects (and all their photos) can be deleted from the same admin panel.
+**Edit any existing project — including the original 25:**
+- Scroll to **All Projects**, find the project, click **Edit**
+- The form fills in with its current photos, title, category, etc.
+- Remove old photos (✕ on a thumbnail) and/or add new ones from your computer
+- Change the title, description, category or ratio as needed
+- Click **Save Changes**
+
+Editing one of the original 25 projects creates an override — the site will show your edited version instead of the original PDF-extracted one. Click **Revert** on that project any time to discard the override and go back to the original photos/details. Genuinely new uploads show a **Delete** button instead, which removes them completely.
+
+**Profile photo:** update it any time from the Profile Photo section at the top of the admin panel — takes effect on the live site immediately.
 
 ## Notes
 

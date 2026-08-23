@@ -1,24 +1,10 @@
-const { put, list } = require("@vercel/blob");
+const { put } = require("@vercel/blob");
 const { isAuthed } = require("../lib/auth");
+const { getOverrides, saveOverrides } = require("../lib/projects-store");
 
-const LIST_PATH = "data/projects.json";
 const VALID_CATEGORIES = ["logo", "social", "menu", "banner", "brochure", "packaging"];
 const VALID_RATIOS = ["16:9", "4:5", "3:4", "1:1", "9:16"];
 const MAX_IMAGES = 12;
-
-async function getUploaded() {
-  try {
-    const { blobs } = await list({ prefix: LIST_PATH });
-    const match = blobs.find((b) => b.pathname === LIST_PATH);
-    if (!match) return [];
-    const r = await fetch(match.url, { cache: "no-store" });
-    if (!r.ok) return [];
-    const data = await r.json();
-    return Array.isArray(data) ? data : [];
-  } catch (e) {
-    return [];
-  }
-}
 
 function extAndType(filename) {
   const extMatch = String(filename || "").match(/\.(\w+)$/);
@@ -69,7 +55,7 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: "No valid images were uploaded." });
     }
 
-    const uploaded = await getUploaded();
+    const overrides = await getOverrides();
     const newProject = {
       id: `up-${Date.now()}`,
       title: String(title).slice(0, 120),
@@ -80,14 +66,8 @@ module.exports = async function handler(req, res) {
       images: uploadedUrls,
       tagNum: "",
     };
-    uploaded.push(newProject);
-
-    await put(LIST_PATH, JSON.stringify(uploaded), {
-      access: "public",
-      addRandomSuffix: false,
-      allowOverwrite: true,
-      contentType: "application/json",
-    });
+    overrides.push(newProject);
+    await saveOverrides(overrides);
 
     res.status(200).json({ ok: true, project: newProject });
   } catch (e) {

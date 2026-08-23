@@ -1,21 +1,6 @@
-const { del, put, list } = require("@vercel/blob");
+const { del } = require("@vercel/blob");
 const { isAuthed } = require("../lib/auth");
-
-const LIST_PATH = "data/projects.json";
-
-async function getUploaded() {
-  try {
-    const { blobs } = await list({ prefix: LIST_PATH });
-    const match = blobs.find((b) => b.pathname === LIST_PATH);
-    if (!match) return [];
-    const r = await fetch(match.url, { cache: "no-store" });
-    if (!r.ok) return [];
-    const data = await r.json();
-    return Array.isArray(data) ? data : [];
-  } catch (e) {
-    return [];
-  }
-}
+const { getOverrides, saveOverrides, isSeedId } = require("../lib/projects-store");
 
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
@@ -23,14 +8,31 @@ module.exports = async function handler(req, res) {
 
   const { id } = req.body || {};
   if (!id) return res.status(400).json({ error: "Missing id" });
-  if (String(id).startsWith("seed-")) {
-    return res.status(400).json({ error: "Cannot delete seed projects." });
+
+  const overrides = await getOverrides();
+  const target = overrides.find((p) => p.id === id);
+  const remaining = overrides.filter((p) => p.id !== id);
+
+  if (isSeedId(id)) {
+    // "Delete" on a seed project just reverts any edits back to the original.
+    // Only clean up blob images that were part of the override (not the static seed assets).
+    if (target) {
+      const urls = target.images && target.images.length ? target.images : [target.image];
+      for (const url of urls) {
+        if (url && url.startsWith("http")) {
+          try {
+            await del(url);
+          } catch (e) {
+            /* ignore */
+          }
+        }
+      }
+    }
+    await saveOverrides(remaining);
+    return res.status(200).json({ ok: true, reverted: true });
   }
 
-  const uploaded = await getUploaded();
-  const target = uploaded.find((p) => p.id === id);
-  const remaining = uploaded.filter((p) => p.id !== id);
-
+  // Full delete for genuinely-uploaded projects.
   if (target) {
     const urls = target.images && target.images.length ? target.images : [target.image];
     for (const url of urls) {
@@ -38,17 +40,10 @@ module.exports = async function handler(req, res) {
       try {
         await del(url);
       } catch (e) {
-        /* ignore blob delete errors */
+        /* ignore */
       }
     }
   }
-
-  await put(LIST_PATH, JSON.stringify(remaining), {
-    access: "public",
-    addRandomSuffix: false,
-    allowOverwrite: true,
-    contentType: "application/json",
-  });
-
+  await saveOverrides(remaining);
   res.status(200).json({ ok: true });
 };

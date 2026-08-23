@@ -25,12 +25,12 @@
     <button class="btn btn-primary" style="width:100%; justify-content:center;" id="loginBtn">Sign in</button>
   </div>
 
-  <!-- UPLOAD PANEL (hidden until authed) -->
+  <!-- UPLOAD / EDIT PANEL (hidden until authed) -->
   <div class="admin-card admin-wide" id="panelCard" style="display:none;">
     <div class="admin-topbar">
       <div>
         <h2 style="margin-bottom:2px;">Manage Projects</h2>
-        <p class="sub" style="margin-bottom:0;">Upload new work to the live portfolio.</p>
+        <p class="sub" style="margin-bottom:0;">Upload new work, or edit any existing project — including the original 25.</p>
       </div>
       <button class="btn btn-ghost" id="logoutBtn">Log out</button>
     </div>
@@ -51,8 +51,13 @@
       </div>
     </div>
 
+    <div class="form-title-row">
+      <h3 id="formTitle">New Project</h3>
+      <button class="btn btn-ghost" id="cancelEditBtn" style="display:none;" type="button">Cancel edit</button>
+    </div>
+
     <div class="field">
-      <label>Project Photos</label>
+      <label id="photosLabel">Project Photos</label>
       <div class="dropzone" id="dropzone">
         <input type="file" id="fileInput" accept="image/*" multiple style="display:none;">
         <span id="dropzoneLabel">Click to choose images, or drag &amp; drop (select multiple for a gallery)</span>
@@ -99,7 +104,18 @@
     <p class="upload-hint" id="uploadHint"></p>
 
     <div class="uploaded-list" id="uploadedList">
-      <h3 style="font-size:13px; text-transform:uppercase; letter-spacing:0.08em; color:var(--violet); margin-bottom:14px; font-weight:700;">Recent Uploads</h3>
+      <div class="browser-head">
+        <h3 style="font-size:13px; text-transform:uppercase; letter-spacing:0.08em; color:var(--violet); font-weight:700; margin:0;">All Projects</h3>
+        <select id="browserFilter">
+          <option value="all">All categories</option>
+          <option value="logo">Logo Design</option>
+          <option value="social">Social Media</option>
+          <option value="menu">Menu Design</option>
+          <option value="banner">Banner &amp; Stand</option>
+          <option value="brochure">Brochure</option>
+          <option value="packaging">Packaging</option>
+        </select>
+      </div>
       <div id="uploadedItems"></div>
     </div>
   </div>
