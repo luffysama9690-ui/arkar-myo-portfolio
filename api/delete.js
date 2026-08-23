@@ -31,11 +31,15 @@ module.exports = async function handler(req, res) {
   const target = uploaded.find((p) => p.id === id);
   const remaining = uploaded.filter((p) => p.id !== id);
 
-  if (target && target.image) {
-    try {
-      await del(target.image);
-    } catch (e) {
-      /* ignore blob delete errors */
+  if (target) {
+    const urls = target.images && target.images.length ? target.images : [target.image];
+    for (const url of urls) {
+      if (!url) continue;
+      try {
+        await del(url);
+      } catch (e) {
+        /* ignore blob delete errors */
+      }
     }
   }
 

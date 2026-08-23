@@ -3,8 +3,7 @@ const panelCard = document.getElementById("panelCard");
 const loginMsg = document.getElementById("loginMsg");
 const uploadMsg = document.getElementById("uploadMsg");
 
-let selectedFile = null;
-let selectedBase64 = null;
+let selectedImages = []; // { file, base64 }
 
 function showMsg(el, text, type) {
   el.textContent = text;
@@ -60,9 +59,10 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
   location.reload();
 });
 
-// --- dropzone / file handling ---
+// --- dropzone / file handling (multi-image) ---
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
+const thumbGrid = document.getElementById("thumbGrid");
 
 dropzone.addEventListener("click", () => fileInput.click());
 dropzone.addEventListener("dragover", (e) => {
@@ -75,22 +75,48 @@ dropzone.addEventListener("dragleave", () => {
 dropzone.addEventListener("drop", (e) => {
   e.preventDefault();
   dropzone.style.borderColor = "";
-  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+  if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
 });
 fileInput.addEventListener("change", (e) => {
-  if (e.target.files.length) handleFile(e.target.files[0]);
+  if (e.target.files.length) handleFiles(e.target.files);
+  fileInput.value = "";
 });
 
-function handleFile(file) {
-  if (!file.type.startsWith("image/")) return;
-  selectedFile = file;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    selectedBase64 = e.target.result;
-    dropzone.classList.add("has-image");
-    dropzone.innerHTML = `<img src="${selectedBase64}" alt="preview">`;
-  };
-  reader.readAsDataURL(file);
+function handleFiles(fileList) {
+  Array.from(fileList).forEach((file) => {
+    if (!file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      selectedImages.push({ file, base64: e.target.result });
+      renderThumbGrid();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderThumbGrid() {
+  thumbGrid.innerHTML = selectedImages
+    .map(
+      (img, i) => `
+    <div class="thumb-item">
+      <img src="${img.base64}" alt="">
+      <span class="thumb-num">${i + 1}</span>
+      <button type="button" class="thumb-remove" data-i="${i}" aria-label="Remove">✕</button>
+    </div>`
+    )
+    .join("");
+
+  thumbGrid.querySelectorAll(".thumb-remove").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      selectedImages.splice(parseInt(btn.dataset.i, 10), 1);
+      renderThumbGrid();
+    });
+  });
+
+  document.getElementById("uploadHint").textContent =
+    selectedImages.length > 1
+      ? `${selectedImages.length} photos selected — first photo is used as the cover thumbnail.`
+      : "";
 }
 
 // --- upload ---
@@ -101,7 +127,8 @@ document.getElementById("uploadBtn").addEventListener("click", async () => {
   const category = document.getElementById("category").value;
   const ratio = document.getElementById("ratio").value;
 
-  if (!selectedBase64) return showMsg(uploadMsg, "Please choose an image first.", "err");
+  if (selectedImages.length === 0)
+    return showMsg(uploadMsg, "Please choose at least one image.", "err");
   if (!title) return showMsg(uploadMsg, "Please enter a project title.", "err");
 
   const btn = document.getElementById("uploadBtn");
@@ -114,8 +141,10 @@ document.getElementById("uploadBtn").addEventListener("click", async () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        imageBase64: selectedBase64,
-        filename: selectedFile ? selectedFile.name : "upload.jpg",
+        images: selectedImages.map((img) => ({
+          imageBase64: img.base64,
+          filename: img.file.name,
+        })),
         title,
         meta,
         category,
@@ -139,12 +168,8 @@ document.getElementById("uploadBtn").addEventListener("click", async () => {
 });
 
 function resetForm() {
-  selectedFile = null;
-  selectedBase64 = null;
-  fileInput.value = "";
-  dropzone.classList.remove("has-image");
-  dropzone.innerHTML =
-    '<span id="dropzoneLabel">Click to choose an image, or drag &amp; drop</span>';
+  selectedImages = [];
+  renderThumbGrid();
   document.getElementById("title").value = "";
   document.getElementById("meta").value = "";
 }
@@ -168,7 +193,9 @@ async function loadUploadedList() {
         <img src="${p.image}" alt="">
         <div class="info">
           <b>${escapeHtml(p.title)}</b>
-          <span>${escapeHtml(p.category)} · ${escapeHtml(p.ratio)}</span>
+          <span>${escapeHtml(p.category)} · ${escapeHtml(p.ratio)} · ${
+          (p.images && p.images.length) || 1
+        } photo${(p.images && p.images.length > 1) ? "s" : ""}</span>
         </div>
         <button class="del-btn" data-id="${p.id}">Delete</button>
       </div>`

@@ -22,13 +22,14 @@ admin panel for uploading new projects (image + category + aspect ratio).
 
 Go to `https://<your-domain>/admin.html`, log in with `ADMIN_PASSWORD`, then:
 
-- Choose an image
+- Choose **one or more images** (click or drag & drop) — each becomes a photo in that project's gallery
+- Reorder isn't drag-and-drop yet; remove and re-add in the order you want (first photo = cover thumbnail)
 - Pick a **category** (Logo Design, Social Media, Menu Design, Banner & Stand, Brochure, Packaging)
-- Pick an **aspect ratio** (16:9, 4:5, 3:4, 1:1, 9:16) — this controls how the image is cropped in the grid
+- Pick an **aspect ratio** (16:9, 4:5, 3:4, 1:1, 9:16) — applies to the cover thumbnail in the grid
 - Add a title and short description
-- Upload — it appears on the live site immediately, filterable by category
+- Upload — it appears on the live site immediately, filterable by category. Clicking the project opens a lightbox that browses through all of that project's own photos with next/prev.
 
-Uploaded projects can be deleted from the same admin panel.
+Uploaded projects (and all their photos) can be deleted from the same admin panel.
 
 ## Notes
 

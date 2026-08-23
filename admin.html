@@ -38,11 +38,12 @@
     <div class="admin-msg" id="uploadMsg"></div>
 
     <div class="field">
-      <label>Project Image</label>
+      <label>Project Photos</label>
       <div class="dropzone" id="dropzone">
-        <input type="file" id="fileInput" accept="image/*" style="display:none;">
-        <span id="dropzoneLabel">Click to choose an image, or drag &amp; drop</span>
+        <input type="file" id="fileInput" accept="image/*" multiple style="display:none;">
+        <span id="dropzoneLabel">Click to choose images, or drag &amp; drop (select multiple for a gallery)</span>
       </div>
+      <div class="thumb-grid" id="thumbGrid"></div>
     </div>
 
     <div class="row2">
@@ -81,6 +82,7 @@
     <button class="btn btn-primary" style="width:100%; justify-content:center;" id="uploadBtn">
       <span id="uploadBtnText">Upload Project</span>
     </button>
+    <p class="upload-hint" id="uploadHint"></p>
 
     <div class="uploaded-list" id="uploadedList">
       <h3 style="font-size:13px; text-transform:uppercase; letter-spacing:0.08em; color:var(--violet); margin-bottom:14px; font-weight:700;">Recent Uploads</h3>
