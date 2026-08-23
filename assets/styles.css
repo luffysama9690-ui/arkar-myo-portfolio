@@ -55,21 +55,21 @@ img{display:block; max-width:100%;}
   display:flex; align-items:center; justify-content:space-between;
 }
 .brand{
-  font-family:'Sora',sans-serif; font-weight:800; font-size:16px;
-  display:flex; align-items:center; gap:9px; letter-spacing:-0.01em; line-height:1;
+  font-family:'Sora',sans-serif; font-weight:800; font-size:14px;
+  display:flex; align-items:center; gap:8px; letter-spacing:-0.01em; line-height:1;
 }
 .brand .mark{
-  width:26px; height:26px; border-radius:8px;
+  width:23px; height:23px; border-radius:7px;
   background:linear-gradient(135deg, var(--violet), var(--pink));
   display:flex; align-items:center; justify-content:center;
-  font-size:12px; font-weight:800; color:#1b1426; line-height:1;
+  font-size:10.5px; font-weight:800; color:#1b1426; line-height:1;
 }
-.nav-links{display:flex; gap:26px; font-size:14px; color:var(--ink-dim); font-weight:500;}
+.nav-links{display:flex; gap:24px; font-size:13px; color:var(--ink-dim); font-weight:500;}
 .nav-links a{position:relative; padding:4px 0; transition:color .2s; cursor:pointer;}
 .nav-links a:hover{color:var(--ink);}
 .nav-cta{
-  border:1px solid var(--line-strong); padding:7px 14px; border-radius:100px;
-  font-size:12px; font-weight:600; color:var(--ink); white-space:nowrap; transition:all .2s;
+  border:1px solid var(--line-strong); padding:6px 13px; border-radius:100px;
+  font-size:11px; font-weight:600; color:var(--ink); white-space:nowrap; transition:all .2s;
   line-height:1.4;
 }
 .nav-cta:hover{background:var(--violet); border-color:var(--violet); color:#1b1426;}
