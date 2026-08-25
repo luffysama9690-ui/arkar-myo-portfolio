@@ -409,3 +409,9 @@ section{position:relative; z-index:1;}
   content:""; position:absolute; left:0; top:8px;
   width:5px; height:5px; border-radius:50%; background:var(--violet);
 }
+
+/* ---------- two-column lists inside the box (Creative Fields | Software) ---------- */
+.two-col-lists{display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+@media (max-width:520px){
+  .two-col-lists{grid-template-columns:1fr;}
+}
