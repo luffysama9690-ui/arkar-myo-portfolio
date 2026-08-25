@@ -22,19 +22,24 @@ admin panel for uploading new projects (image + category + aspect ratio).
 
 Go to `https://<your-domain>/admin.html`, log in with `ADMIN_PASSWORD`.
 
+**Every project has two separate photo slots:**
+- **Cover Photo** — one image, shown as the card thumbnail on the main grid. Never shown in the gallery/lightbox.
+- **Gallery Photos** — the photos shown when a visitor clicks into the project, with next/prev navigation. The cover is not repeated here.
+
 **Upload a new project:**
-- Choose one or more images — each becomes a photo in that project's gallery (first = cover thumbnail)
+- Choose a **Cover Photo** (required)
+- Optionally add one or more **Gallery Photos**
 - Pick a category, aspect ratio, title and short description
 - Click **Upload Project**
 
 **Edit any existing project — including the original 25:**
 - Scroll to **All Projects**, find the project, click **Edit**
-- The form fills in with its current photos, title, category, etc.
-- Remove old photos (✕ on a thumbnail) and/or add new ones from your computer
+- Click the Cover Photo box to replace it with a new image
+- Remove old gallery photos (✕ on a thumbnail) and/or add new ones
 - Change the title, description, category or ratio as needed
 - Click **Save Changes**
 
-Editing one of the original 25 projects creates an override — the site will show your edited version instead of the original PDF-extracted one. Click **Revert** on that project any time to discard the override and go back to the original photos/details. Genuinely new uploads show a **Delete** button instead, which removes them completely.
+Editing one of the original 25 projects creates an override — the site will show your edited version instead of the original PDF-extracted one. Click **Revert** on that project any time to discard the override and go back to the original cover/gallery/details. Genuinely new uploads show a **Delete** button instead, which removes them completely (including their blob-stored images).
 
 **Profile photo:** update it any time from the Profile Photo section at the top of the admin panel — takes effect on the live site immediately.
 

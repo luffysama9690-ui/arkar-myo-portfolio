@@ -14,12 +14,35 @@ function extAndType(filename) {
   return { ext, contentType };
 }
 
+async function uploadOne(img) {
+  const base64Data = String(img.imageBase64 || "").split(",").pop();
+  const buffer = Buffer.from(base64Data, "base64");
+  if (buffer.length === 0) return null;
+  if (buffer.length > 8 * 1024 * 1024) {
+    throw new Error("One of the images exceeds 8MB.");
+  }
+  const { ext, contentType } = extAndType(img.filename);
+  const key = `projects/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const blob = await put(key, buffer, { access: "public", contentType });
+  return blob.url;
+}
+
+async function safeDelete(url) {
+  if (url && url.startsWith("http")) {
+    try {
+      await del(url);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
   if (!isAuthed(req)) return res.status(401).json({ error: "Unauthorized" });
 
   try {
-    const { id, title, meta, category, ratio, keepImages, newImages } = req.body || {};
+    const { id, title, meta, category, ratio, newCover, keepImages, newImages } = req.body || {};
     if (!id) return res.status(400).json({ error: "Missing project id." });
 
     if (category && !VALID_CATEGORIES.includes(category)) {
@@ -36,44 +59,35 @@ module.exports = async function handler(req, res) {
     }
     if (!existing) return res.status(404).json({ error: "Project not found." });
 
-    const baseImages = existing.images && existing.images.length ? existing.images : [existing.image];
-    const kept = Array.isArray(keepImages) ? keepImages : baseImages;
-
-    // delete blob-hosted images that were dropped (skip static /assets/ paths - can't delete those anyway)
-    const removed = baseImages.filter((url) => url && !kept.includes(url));
-    for (const url of removed) {
-      if (url && url.startsWith("http")) {
-        try {
-          await del(url);
-        } catch (e) {
-          /* ignore */
-        }
+    // --- cover photo ---
+    let finalCover = existing.image;
+    if (newCover && newCover.imageBase64) {
+      const newCoverUrl = await uploadOne(newCover);
+      if (newCoverUrl) {
+        await safeDelete(existing.image);
+        finalCover = newCoverUrl;
       }
+    }
+
+    // --- gallery photos ---
+    const baseGallery = existing.images && existing.images.length ? existing.images : [];
+    const kept = Array.isArray(keepImages) ? keepImages : baseGallery;
+    const removed = baseGallery.filter((url) => url && !kept.includes(url));
+    for (const url of removed) {
+      await safeDelete(url);
     }
 
     let addedUrls = [];
     if (Array.isArray(newImages) && newImages.length > 0) {
       if (kept.length + newImages.length > MAX_IMAGES) {
-        return res.status(400).json({ error: `Too many images (max ${MAX_IMAGES}).` });
+        return res.status(400).json({ error: `Too many gallery images (max ${MAX_IMAGES}).` });
       }
       for (const img of newImages) {
-        const base64Data = String(img.imageBase64 || "").split(",").pop();
-        const buffer = Buffer.from(base64Data, "base64");
-        if (buffer.length === 0) continue;
-        if (buffer.length > 8 * 1024 * 1024) {
-          return res.status(400).json({ error: "One of the images exceeds 8MB." });
-        }
-        const { ext, contentType } = extAndType(img.filename);
-        const key = `projects/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-        const blob = await put(key, buffer, { access: "public", contentType });
-        addedUrls.push(blob.url);
+        const url = await uploadOne(img);
+        if (url) addedUrls.push(url);
       }
     }
-
-    const finalImages = [...kept, ...addedUrls];
-    if (finalImages.length === 0) {
-      return res.status(400).json({ error: "A project needs at least one photo." });
-    }
+    const finalGallery = [...kept, ...addedUrls];
 
     const updated = {
       ...existing,
@@ -81,8 +95,8 @@ module.exports = async function handler(req, res) {
       meta: meta !== undefined ? String(meta).slice(0, 200) : existing.meta,
       category: category || existing.category,
       ratio: ratio || existing.ratio,
-      image: finalImages[0],
-      images: finalImages,
+      image: finalCover,
+      images: finalGallery,
     };
 
     const idx = overrides.findIndex((p) => p.id === id);

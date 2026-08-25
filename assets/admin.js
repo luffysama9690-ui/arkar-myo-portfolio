@@ -73,7 +73,7 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
   location.reload();
 });
 
-// --- profile photo ---
+// --- profile photo (site owner's own headshot) ---
 const profileFileInput = document.getElementById("profileFileInput");
 const profileChangeBtn = document.getElementById("profileChangeBtn");
 const profilePreviewImg = document.getElementById("profilePreviewImg");
@@ -121,12 +121,60 @@ async function loadCurrentProfilePhoto() {
   }
 }
 
-// --- unified photo state: {type:'existing', url} | {type:'new', file, base64} ---
-let selectedImages = [];
+// --- cover photo (single, per project) ---
+// state: null | {type:'existing', url} | {type:'new', file, base64}
+let coverImage = null;
+
+const coverDropzone = document.getElementById("coverDropzone");
+const coverFileInput = document.getElementById("coverFileInput");
+const coverDropzoneLabel = document.getElementById("coverDropzoneLabel");
+
+coverDropzone.addEventListener("click", () => coverFileInput.click());
+coverDropzone.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  coverDropzone.style.borderColor = "var(--violet)";
+});
+coverDropzone.addEventListener("dragleave", () => {
+  coverDropzone.style.borderColor = "";
+});
+coverDropzone.addEventListener("drop", (e) => {
+  e.preventDefault();
+  coverDropzone.style.borderColor = "";
+  if (e.dataTransfer.files.length) handleCoverFile(e.dataTransfer.files[0]);
+});
+coverFileInput.addEventListener("change", (e) => {
+  if (e.target.files.length) handleCoverFile(e.target.files[0]);
+  coverFileInput.value = "";
+});
+
+function handleCoverFile(file) {
+  if (!file.type.startsWith("image/")) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    coverImage = { type: "new", file, base64: e.target.result };
+    renderCoverPreview();
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderCoverPreview() {
+  if (!coverImage) {
+    coverDropzone.classList.remove("has-image");
+    coverDropzone.innerHTML =
+      '<span id="coverDropzoneLabel">Click to choose a cover image, or drag &amp; drop</span>';
+    return;
+  }
+  const src = coverImage.type === "existing" ? coverImage.url : coverImage.base64;
+  coverDropzone.classList.add("has-image");
+  coverDropzone.innerHTML = `<img src="${src}" alt="Cover preview">`;
+}
+
+// --- unified gallery photo state: {type:'existing', url} | {type:'new', file, base64} ---
+let galleryImages = [];
 let currentEditId = null;
 let allProjectsCache = [];
 
-// --- dropzone / file handling ---
+// --- dropzone / file handling (gallery) ---
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
 const thumbGrid = document.getElementById("thumbGrid");
@@ -154,7 +202,7 @@ function handleFiles(fileList) {
     if (!file.type.startsWith("image/")) return;
     const reader = new FileReader();
     reader.onload = (e) => {
-      selectedImages.push({ type: "new", file, base64: e.target.result });
+      galleryImages.push({ type: "new", file, base64: e.target.result });
       renderThumbGrid();
     };
     reader.readAsDataURL(file);
@@ -162,7 +210,7 @@ function handleFiles(fileList) {
 }
 
 function renderThumbGrid() {
-  thumbGrid.innerHTML = selectedImages
+  thumbGrid.innerHTML = galleryImages
     .map((img, i) => {
       const src = img.type === "existing" ? img.url : img.base64;
       const cls = img.type === "existing" ? "thumb-item is-existing" : "thumb-item";
@@ -177,16 +225,16 @@ function renderThumbGrid() {
 
   thumbGrid.querySelectorAll(".thumb-remove").forEach((btn) => {
     btn.addEventListener("click", () => {
-      selectedImages.splice(parseInt(btn.dataset.i, 10), 1);
+      galleryImages.splice(parseInt(btn.dataset.i, 10), 1);
       renderThumbGrid();
     });
   });
 
   const hint = document.getElementById("uploadHint");
-  if (selectedImages.length > 1) {
-    hint.textContent = `${selectedImages.length} photos — first photo is the cover thumbnail.`;
+  if (galleryImages.length > 0) {
+    hint.textContent = `${galleryImages.length} gallery photo${galleryImages.length > 1 ? "s" : ""}.`;
   } else {
-    hint.textContent = "";
+    hint.textContent = "No gallery photos yet — the cover photo will be shown if someone clicks in.";
   }
 }
 
@@ -196,10 +244,12 @@ function enterEditMode(project) {
   document.getElementById("formTitle").textContent = "Editing: " + project.title;
   document.getElementById("cancelEditBtn").style.display = "inline-flex";
   document.getElementById("uploadBtnText").textContent = "Save Changes";
-  document.getElementById("photosLabel").textContent = "Project Photos (remove old, add new)";
 
-  const imgs = project.images && project.images.length ? project.images : [project.image];
-  selectedImages = imgs.map((url) => ({ type: "existing", url }));
+  coverImage = project.image ? { type: "existing", url: project.image } : null;
+  renderCoverPreview();
+
+  const galleryUrls = project.images && project.images.length ? project.images : [];
+  galleryImages = galleryUrls.map((url) => ({ type: "existing", url }));
   renderThumbGrid();
 
   document.getElementById("title").value = project.title || "";
@@ -213,11 +263,12 @@ function enterEditMode(project) {
 
 function exitEditMode() {
   currentEditId = null;
-  selectedImages = [];
+  coverImage = null;
+  galleryImages = [];
   document.getElementById("formTitle").textContent = "New Project";
   document.getElementById("cancelEditBtn").style.display = "none";
   document.getElementById("uploadBtnText").textContent = "Upload Project";
-  document.getElementById("photosLabel").textContent = "Project Photos";
+  renderCoverPreview();
   renderThumbGrid();
   document.getElementById("title").value = "";
   document.getElementById("meta").value = "";
@@ -234,8 +285,7 @@ document.getElementById("uploadBtn").addEventListener("click", async () => {
   const category = document.getElementById("category").value;
   const ratio = document.getElementById("ratio").value;
 
-  if (selectedImages.length === 0)
-    return showMsg(uploadMsg, "Please choose at least one image.", "err");
+  if (!coverImage) return showMsg(uploadMsg, "Please choose a cover photo.", "err");
   if (!title) return showMsg(uploadMsg, "Please enter a project title.", "err");
 
   const btn = document.getElementById("uploadBtn");
@@ -244,24 +294,43 @@ document.getElementById("uploadBtn").addEventListener("click", async () => {
   const originalLabel = currentEditId ? "Save Changes" : "Upload Project";
   btnText.innerHTML = '<span class="spin-loader"></span> Saving...';
 
-  const newImages = selectedImages
+  const newGalleryImages = galleryImages
     .filter((i) => i.type === "new")
     .map((i) => ({ imageBase64: i.base64, filename: i.file.name }));
 
   try {
     let res, data;
     if (currentEditId) {
-      const keepImages = selectedImages.filter((i) => i.type === "existing").map((i) => i.url);
+      const keepImages = galleryImages.filter((i) => i.type === "existing").map((i) => i.url);
+      const body = {
+        id: currentEditId,
+        title,
+        meta,
+        category,
+        ratio,
+        keepImages,
+        newImages: newGalleryImages,
+      };
+      if (coverImage.type === "new") {
+        body.newCover = { imageBase64: coverImage.base64, filename: coverImage.file.name };
+      }
       res = await fetch("/api/update", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: currentEditId, title, meta, category, ratio, keepImages, newImages }),
+        body: JSON.stringify(body),
       });
     } else {
       res = await fetch("/api/upload", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ images: newImages, title, meta, category, ratio }),
+        body: JSON.stringify({
+          cover: { imageBase64: coverImage.base64, filename: coverImage.file.name },
+          images: newGalleryImages,
+          title,
+          meta,
+          category,
+          ratio,
+        }),
       });
     }
     data = await res.json();
@@ -309,13 +378,13 @@ function renderBrowseList() {
   container.innerHTML = list
     .map((p) => {
       const isSeed = String(p.id).startsWith("seed-");
-      const photoCount = (p.images && p.images.length) || 1;
+      const galleryCount = (p.images && p.images.length) || 0;
       return `
     <div class="browse-item">
       <img src="${p.image}" alt="">
       <div class="info">
         <b>${escapeHtml(p.title)}</b>
-        <span>${CATEGORY_LABELS[p.category] || p.category} · ${photoCount} photo${photoCount > 1 ? "s" : ""}${isSeed ? " · original" : ""}</span>
+        <span>${CATEGORY_LABELS[p.category] || p.category} · ${galleryCount} gallery photo${galleryCount === 1 ? "" : "s"}${isSeed ? " · original" : ""}</span>
       </div>
       <div class="browse-actions">
         <button class="edit-btn" data-id="${p.id}">Edit</button>
@@ -336,7 +405,7 @@ function renderBrowseList() {
     btn.addEventListener("click", async () => {
       const isSeed = btn.dataset.seed === "true";
       const confirmMsg = isSeed
-        ? "Revert this project back to its original photos and details?"
+        ? "Revert this project back to its original cover, gallery and details?"
         : "Delete this project permanently?";
       if (!confirm(confirmMsg)) return;
       btn.textContent = "...";

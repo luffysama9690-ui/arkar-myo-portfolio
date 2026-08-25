@@ -14,18 +14,28 @@ function extAndType(filename) {
   return { ext, contentType };
 }
 
+async function uploadOne(img) {
+  const base64Data = String(img.imageBase64 || "").split(",").pop();
+  const buffer = Buffer.from(base64Data, "base64");
+  if (buffer.length === 0) return null;
+  if (buffer.length > 8 * 1024 * 1024) {
+    throw new Error("One of the images exceeds 8MB.");
+  }
+  const { ext, contentType } = extAndType(img.filename);
+  const key = `projects/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const blob = await put(key, buffer, { access: "public", contentType });
+  return blob.url;
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
   if (!isAuthed(req)) return res.status(401).json({ error: "Unauthorized" });
 
   try {
-    const { images, title, meta, category, ratio } = req.body || {};
+    const { cover, images, title, meta, category, ratio } = req.body || {};
 
-    if (!Array.isArray(images) || images.length === 0) {
-      return res.status(400).json({ error: "Please provide at least one image." });
-    }
-    if (images.length > MAX_IMAGES) {
-      return res.status(400).json({ error: `Too many images (max ${MAX_IMAGES}).` });
+    if (!cover || !cover.imageBase64) {
+      return res.status(400).json({ error: "Please provide a cover photo." });
     }
     if (!title || !category || !ratio) {
       return res.status(400).json({ error: "Missing required fields." });
@@ -36,23 +46,18 @@ module.exports = async function handler(req, res) {
     if (!VALID_RATIOS.includes(ratio)) {
       return res.status(400).json({ error: "Invalid ratio." });
     }
-
-    const uploadedUrls = [];
-    for (const img of images) {
-      const base64Data = String(img.imageBase64 || "").split(",").pop();
-      const buffer = Buffer.from(base64Data, "base64");
-      if (buffer.length === 0) continue;
-      if (buffer.length > 8 * 1024 * 1024) {
-        return res.status(400).json({ error: "One of the images exceeds 8MB." });
-      }
-      const { ext, contentType } = extAndType(img.filename);
-      const key = `projects/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-      const blob = await put(key, buffer, { access: "public", contentType });
-      uploadedUrls.push(blob.url);
+    const galleryInput = Array.isArray(images) ? images : [];
+    if (galleryInput.length > MAX_IMAGES) {
+      return res.status(400).json({ error: `Too many gallery images (max ${MAX_IMAGES}).` });
     }
 
-    if (uploadedUrls.length === 0) {
-      return res.status(400).json({ error: "No valid images were uploaded." });
+    const coverUrl = await uploadOne(cover);
+    if (!coverUrl) return res.status(400).json({ error: "Invalid cover photo." });
+
+    const galleryUrls = [];
+    for (const img of galleryInput) {
+      const url = await uploadOne(img);
+      if (url) galleryUrls.push(url);
     }
 
     const overrides = await getOverrides();
@@ -62,8 +67,8 @@ module.exports = async function handler(req, res) {
       meta: String(meta || "").slice(0, 200),
       category,
       ratio,
-      image: uploadedUrls[0],
-      images: uploadedUrls,
+      image: coverUrl,
+      images: galleryUrls,
       tagNum: "",
     };
     overrides.push(newProject);
