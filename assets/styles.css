@@ -396,3 +396,16 @@ section{position:relative; z-index:1;}
 }
 .dropzone-cover:not(.has-image){padding:24px; aspect-ratio:auto; max-width:100%;}
 .dropzone-cover.has-image img{width:100%; height:100%; object-fit:cover; display:block;}
+
+/* ---------- bullet lists (Creative Fields / Software) ---------- */
+.bullet-list{
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column; gap:9px;
+}
+.bullet-list li{
+  position:relative; padding-left:18px; font-size:14.5px; color:var(--ink-dim);
+}
+.bullet-list li::before{
+  content:""; position:absolute; left:0; top:8px;
+  width:5px; height:5px; border-radius:50%; background:var(--violet);
+}
