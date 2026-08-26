@@ -153,6 +153,37 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "ArrowLeft") showPrev();
 });
 
+/* ---------- touch swipe ---------- */
+let touchStartX = 0;
+let touchStartY = 0;
+
+lightbox.addEventListener(
+  "touchstart",
+  (e) => {
+    touchStartX = e.changedTouches[0].clientX;
+    touchStartY = e.changedTouches[0].clientY;
+  },
+  { passive: true }
+);
+
+lightbox.addEventListener(
+  "touchend",
+  (e) => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    const SWIPE_THRESHOLD = 40;
+    // ignore mostly-vertical swipes so vertical scroll/dismiss gestures aren't hijacked
+    if (Math.abs(dx) > SWIPE_THRESHOLD && Math.abs(dx) > Math.abs(dy)) {
+      if (dx < 0) {
+        showNext();
+      } else {
+        showPrev();
+      }
+    }
+  },
+  { passive: true }
+);
+
 function escapeHtml(str) {
   const div = document.createElement("div");
   div.textContent = str || "";
