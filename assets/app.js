@@ -75,7 +75,7 @@ function renderGrid() {
           <h4>${escapeHtml(p.title)}</h4>
           <div class="meta">${escapeHtml(p.meta || "")}</div>
         </div>
-        <span class="chip">${p.tagNum ? p.tagNum : catLabel(p.category)}</span>
+        <span class="chip">${catLabel(p.category)}</span>
       </div>
     </div>`
     )
