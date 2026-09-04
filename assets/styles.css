@@ -193,7 +193,7 @@ section{position:relative; z-index:1;}
 .contact .eyebrow::before{display:none;}
 .contact h2{font-size:clamp(32px,5vw,54px); margin-bottom:18px;}
 .contact p{color:var(--ink-dim); max-width:460px; margin:0 auto 40px; font-size:16px;}
-.contact-cards{display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-bottom:60px;}
+.contact-cards{display:flex; align-items:center; gap:16px; justify-content:center; flex-wrap:wrap; margin-bottom:60px;}
 .ccard{
   border:1px solid var(--line-strong); border-radius:16px; padding:18px 24px;
   display:flex; align-items:center; gap:12px; font-weight:600; font-size:14.5px;
@@ -202,6 +202,17 @@ section{position:relative; z-index:1;}
 .ccard:hover{border-color:var(--violet); color:var(--violet); transform:translateY(-2px);}
 .ccard.whatsapp:hover{border-color:#25D366; color:#25D366;}
 .ccard .ic{width:36px; height:36px; border-radius:10px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; font-size:15px;}
+.icon-btn{
+  width:52px; height:52px; border-radius:50%;
+  border:1px solid var(--line-strong); background:var(--surface);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--ink-dim); transition:all .2s;
+}
+.icon-btn svg{width:22px; height:22px;}
+.icon-btn:hover{transform:translateY(-2px); border-color:var(--violet); color:var(--violet);}
+.icon-btn.whatsapp:hover{border-color:#25D366; color:#25D366;}
+.icon-btn.facebook:hover{border-color:#1877F2; color:#1877F2;}
+.icon-btn.tiktok:hover{border-color:#ffffff; color:#ffffff;}
 .foot-bottom{
   display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;
   padding-top:36px; border-top:1px solid var(--line); font-size:13px; color:var(--ink-faint);
