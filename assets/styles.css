@@ -386,8 +386,15 @@ section{position:relative; z-index:1;}
   background:var(--bg-deep); color:var(--ink-dim); font-size:12.5px; font-family:'Inter',sans-serif;
 }
 .thumb-item.is-existing .thumb-num{background:rgba(126,224,138,0.25); color:#bdf0c4;}
-.browse-item{display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid var(--line);}
+.browse-item{display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid var(--line); background:var(--surface); position:relative;}
 .browse-item:last-child{border-bottom:none;}
+.browse-item.is-dragging{opacity:0.5; z-index:5;}
+.drag-handle{
+  flex-shrink:0; width:22px; text-align:center; font-size:17px; color:var(--ink-faint);
+  cursor:grab; touch-action:none; user-select:none; line-height:1;
+}
+.drag-handle:active{cursor:grabbing;}
+.drag-handle.is-disabled{opacity:0.25; cursor:default;}
 .browse-item img{width:56px; height:56px; object-fit:cover; border-radius:10px; border:1px solid var(--line-strong); flex-shrink:0;}
 .browse-item .info{flex:1; min-width:0;}
 .browse-item .info b{display:block; font-size:14px; margin-bottom:2px;}

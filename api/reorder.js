@@ -11,13 +11,22 @@ module.exports = async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
   if (!isAuthed(req)) return res.status(401).json({ error: "Unauthorized" });
 
-  const { id, direction } = req.body || {};
-  if (!id) return res.status(400).json({ error: "Missing id" });
-  if (direction !== "up" && direction !== "down") {
-    return res.status(400).json({ error: "direction must be 'up' or 'down'." });
-  }
+  const { id, direction, order } = req.body || {};
 
   try {
+    // Drag-and-drop path: caller supplies the full desired order in one shot.
+    if (Array.isArray(order)) {
+      if (order.length === 0) return res.status(400).json({ error: "Order list is empty." });
+      await saveOrder(order);
+      return res.status(200).json({ ok: true, order });
+    }
+
+    // Fine-tune path: nudge a single project up or down by one step.
+    if (!id) return res.status(400).json({ error: "Missing id" });
+    if (direction !== "up" && direction !== "down") {
+      return res.status(400).json({ error: "direction must be 'up' or 'down'." });
+    }
+
     const [overrides, savedOrder] = await Promise.all([getOverrides(), getOrder()]);
     const merged = mergeProjects(overrides);
     const currentOrder = applyOrder(merged, savedOrder).map((p) => p.id);

@@ -365,6 +365,76 @@ async function loadAllProjects() {
   }
 }
 
+let dragEl = null;
+let dragContainerReady = false;
+
+function setupDragContainer(container) {
+  if (dragContainerReady) return;
+  dragContainerReady = true;
+
+  container.addEventListener("pointermove", (e) => {
+    if (!dragEl) return;
+    const target = document.elementFromPoint(e.clientX, e.clientY);
+    const overItem = target && target.closest(".browse-item");
+    if (overItem && overItem !== dragEl && container.contains(overItem)) {
+      const rect = overItem.getBoundingClientRect();
+      const midpoint = rect.top + rect.height / 2;
+      if (e.clientY < midpoint) {
+        container.insertBefore(dragEl, overItem);
+      } else {
+        container.insertBefore(dragEl, overItem.nextSibling);
+      }
+    }
+  });
+
+  async function finishDrag(e) {
+    if (!dragEl) return;
+    const finishedEl = dragEl;
+    finishedEl.classList.remove("is-dragging");
+    try {
+      const handle = finishedEl.querySelector(".drag-handle");
+      if (handle) handle.releasePointerCapture(e.pointerId);
+    } catch (err) {
+      /* ignore */
+    }
+    const newOrder = Array.from(container.querySelectorAll(".browse-item")).map(
+      (el) => el.dataset.id
+    );
+    dragEl = null;
+    try {
+      await fetch("/api/reorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ order: newOrder }),
+      });
+      loadAllProjects();
+    } catch (err) {
+      /* ignore */
+    }
+  }
+
+  container.addEventListener("pointerup", finishDrag);
+  container.addEventListener("pointercancel", finishDrag);
+}
+
+function attachDragHandlers(container) {
+  setupDragContainer(container);
+  container.querySelectorAll(".drag-handle:not(.is-disabled)").forEach((handle) => {
+    handle.addEventListener("pointerdown", (e) => {
+      const item = handle.closest(".browse-item");
+      if (!item) return;
+      dragEl = item;
+      item.classList.add("is-dragging");
+      try {
+        handle.setPointerCapture(e.pointerId);
+      } catch (err) {
+        /* ignore */
+      }
+      e.preventDefault();
+    });
+  });
+}
+
 function renderBrowseList() {
   const container = document.getElementById("uploadedItems");
   const filter = browserFilter.value;
@@ -375,12 +445,15 @@ function renderBrowseList() {
     return;
   }
 
+  const dragEnabled = filter === "all";
+
   container.innerHTML = list
     .map((p) => {
       const isSeed = String(p.id).startsWith("seed-");
       const galleryCount = (p.images && p.images.length) || 0;
       return `
-    <div class="browse-item">
+    <div class="browse-item" data-id="${p.id}">
+      <span class="drag-handle ${dragEnabled ? "" : "is-disabled"}" title="${dragEnabled ? "Drag to reorder" : "Switch to All categories to drag"}">⠿</span>
       <img src="${p.image}" alt="">
       <div class="info">
         <b>${escapeHtml(p.title)}</b>
@@ -395,6 +468,8 @@ function renderBrowseList() {
     </div>`;
     })
     .join("");
+
+  if (dragEnabled) attachDragHandlers(container);
 
   container.querySelectorAll(".move-btn").forEach((btn) => {
     btn.addEventListener("click", async () => {

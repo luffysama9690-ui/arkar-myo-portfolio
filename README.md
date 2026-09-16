@@ -42,9 +42,10 @@ Go to `https://<your-domain>/admin.html`, log in with `ADMIN_PASSWORD`.
 Editing one of the original 25 projects creates an override — the site will show your edited version instead of the original PDF-extracted one. Click **Revert** on that project any time to discard the override and go back to the original cover/gallery/details. Genuinely new uploads show a **Delete** button instead, which removes them completely (including their blob-stored images).
 
 **Reordering projects:**
-- In **All Projects**, use the **↑ / ↓** buttons on any row (seed or uploaded) to move it earlier or later in the display order.
-- New uploads always start at the very end — use ↑ to bring one forward.
-- Ordering applies across the whole site (the "All Work" view and each category's filtered view keep this relative order). Switch the filter dropdown to "All categories" while reordering so the full picture is visible.
+- Grab the **⠿ handle** on the left of any row in **All Projects** and **drag it** to wherever you want — drop it and the new order saves automatically. This is the fastest way to bring a project (e.g. a brand-new upload stuck at the bottom) straight to the top in one move.
+- The **↑ / ↓** buttons are still there for nudging a project one step at a time.
+- Dragging only works while the filter is set to **"All categories"** (arrows work in any filtered view too).
+- Ordering applies across the whole site (the "All Work" view and each category's filtered view keep this relative order).
 
 **Profile photo:** update it any time from the Profile Photo section at the top of the admin panel — takes effect on the live site immediately.
 
