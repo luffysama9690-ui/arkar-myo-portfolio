@@ -387,12 +387,32 @@ function renderBrowseList() {
         <span>${CATEGORY_LABELS[p.category] || p.category} · ${galleryCount} gallery photo${galleryCount === 1 ? "" : "s"}${isSeed ? " · original" : ""}</span>
       </div>
       <div class="browse-actions">
+        <button class="move-btn" data-id="${p.id}" data-dir="up" aria-label="Move up" title="Move up">↑</button>
+        <button class="move-btn" data-id="${p.id}" data-dir="down" aria-label="Move down" title="Move down">↓</button>
         <button class="edit-btn" data-id="${p.id}">Edit</button>
         <button class="del-btn" data-id="${p.id}" data-seed="${isSeed}">${isSeed ? "Revert" : "Delete"}</button>
       </div>
     </div>`;
     })
     .join("");
+
+  container.querySelectorAll(".move-btn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      try {
+        const res = await fetch("/api/reorder", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: btn.dataset.id, direction: btn.dataset.dir }),
+        });
+        if (res.ok) loadAllProjects();
+      } catch (e) {
+        /* ignore */
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  });
 
   container.querySelectorAll(".edit-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
