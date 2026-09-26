@@ -17,8 +17,16 @@ module.exports = async function handler(req, res) {
     // Drag-and-drop path: caller supplies the full desired order in one shot.
     if (Array.isArray(order)) {
       if (order.length === 0) return res.status(400).json({ error: "Order list is empty." });
-      await saveOrder(order);
-      return res.status(200).json({ ok: true, order });
+      // Defensive dedupe: never persist an order list with a repeated id
+      // (this is what previously caused a project to render twice).
+      const seenIds = new Set();
+      const cleanOrder = order.filter((id) => {
+        if (seenIds.has(id)) return false;
+        seenIds.add(id);
+        return true;
+      });
+      await saveOrder(cleanOrder);
+      return res.status(200).json({ ok: true, order: cleanOrder });
     }
 
     // Fine-tune path: nudge a single project up or down by one step.

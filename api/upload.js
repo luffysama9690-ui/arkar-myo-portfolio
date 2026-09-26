@@ -62,7 +62,7 @@ module.exports = async function handler(req, res) {
 
     const overrides = await getOverrides();
     const newProject = {
-      id: `up-${Date.now()}`,
+      id: `up-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       title: String(title).slice(0, 120),
       meta: String(meta || "").slice(0, 200),
       category,
